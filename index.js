@@ -1,29 +1,24 @@
 const express = require('express');
+  morgan = require('morgan'),
+  fs = require('fs'), //import built in node modules fs and path
+  path = require('path');
+  
 const app = express();
+  //create a write stream (in append mode)
+  //a 'log.txt' file is created in root directory 
+const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log-text'), {flag
+  s: 'a'})
 
-let myLogger = (req, res, next) => {
-  console.log(req.url);
-  next();
-};
+//setup the logger
 
-let requestTime = (req, res, next) => {
-  req.requestTime = Date.now();
-  next();
-};
-
-app.use(myLogger);
-app.use(requestTime);
+app.use(morgan('combined', {stream: accessLogStream}));
 
 app.get('/', (req, res) => {
   res.send('Welcome to my app!');
-  responseText += '<small>Requested at: ' + req.requestTime + '</small>';
-  res.send(responseText);
 });
 
 app.get('/secreturl', (req, res) => {
   res.send('This is a secret url with super top-secret content.');
-  responseText += '<small>Requested at: ' + req.requestTime + '</small>';
-  res.send(responseText);
 });
 
 app.listen(8080, () => {
