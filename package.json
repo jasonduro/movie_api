@@ -1,7 +1,6 @@
 {
   "name": "movie_api",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,7 +10,7 @@
     "url": "git+https://github.com/jasonduro/movie_api.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Jason",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/jasonduro/movie_api/issues"
@@ -25,5 +24,6 @@
   },
   "devDependencies": {
     "eslint": "^8.31.0"
-  }
+  },
+  "description": ""
 }
