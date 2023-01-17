@@ -6,8 +6,8 @@ const express = require('express');
 const app = express();
   //create a write stream (in append mode)
   //a 'log.txt' file is created in root directory 
-const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log-text'), {flag
-  s: 'a'})
+const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log-text'), {
+  flags: 'a'})
 
 //setup the logger
 
