@@ -10,7 +10,6 @@ const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log-text'), {
   flags: 'a'})
 
 //setup the logger
-
 app.use(morgan('combined', {stream: accessLogStream}));
 
 app.get('/', (req, res) => {
@@ -19,6 +18,12 @@ app.get('/', (req, res) => {
 
 app.get('/secreturl', (req, res) => {
   res.send('This is a secret url with super top-secret content.');
+});
+
+//error handling in express
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
 });
 
 app.listen(8080, () => {
