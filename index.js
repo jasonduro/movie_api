@@ -7,7 +7,7 @@ const app = express();
   
 //create a write stream (in append mode)
  //a 'log.txt' file is created in root directory 
-const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log-text'), {flags: 'a'})
+const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.text'), {flags: 'a'})
 
 //setup the logger
 app.use(morgan('common', {stream: accessLogStream}));
@@ -59,12 +59,16 @@ let myFlix = [
 
 ];
 
+app.get('/', (req, res) => {
+  res.send('Welcome to MyFlix Movie App!');
+});
+
 app.get('/movies', (req, res) => {
   res.json(myFlix);
 });
 
-app.get('/', (req, res) => {
-  res.send('Welcome to MyFlix Movie App!');
+app.get('/documentation', (req, res) => {
+  res.sendFile('public/documentation.html', { root: __dirname });
 });
 
 //error handling in express
