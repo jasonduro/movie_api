@@ -4,6 +4,15 @@ const express = require('express');
   path = require('path');
   
 const app = express();
+const bodyParser = require('body-parser'),
+  methodOverride = require('method-override');
+
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+
+app.use(bodyParser.json());
+app.use(methodOverride());
   
 //create a write stream (in append mode)
  //a 'log.txt' file is created in root directory 
@@ -56,7 +65,6 @@ let myFlix = [
     title: 'Interstellar',
     year: '2014'
   }
-
 ];
 
 app.get('/', (req, res) => {
