@@ -10,33 +10,9 @@ let users = []
 let movies = [];
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//Read Function
+app.get('/movies', (req, res) => {
+    res.status(200).json(movies);
+})
 
 app.listen(8080, () => console.log("listening on 8080"))
