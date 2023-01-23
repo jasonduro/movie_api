@@ -184,9 +184,22 @@ let movies = [
 ]
 
 
-//Read Function
+//Read Function - Return all movies
 app.get('/movies', (req, res) => {
     res.status(200).json(movies);
 })
+
+//Read Function - Return a specific movie with object destructuring
+app.get('/movies/:title', (req, res) => {
+    const { title } = req.params;
+    const movies = movies.find( moive => movies.Title === title );
+
+    if (movie) {
+        res.status(200).json(movie);
+    } else {
+        res.status(400).send('no such movie')
+    }
+})
+
 
 app.listen(8080, () => console.log("listening on 8080"))
