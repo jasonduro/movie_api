@@ -1,14 +1,16 @@
 const express = require('express'),
-    app = express(),
+    morgan = require('morgan'),
     bodyParser = require('body-parser'),
-    uuid = require('uuid');
+    uuid = require('uuid'),
+    mongoose = require('mongoose'),
+    Models = require('./models.js');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true}));
+app.use(morgan('common'));
+app.use(express.static('public'));
 
-const mongoose = require('mongoose');
-const Models = require('./models.js');
-
+const app = express();
 const Movies = Models.Movie;
 const Users = Models.User;
 
@@ -253,20 +255,38 @@ app.post('/users', (req, res) => {
         });
     });
 
-//  UPDATE - Allow users to update their user info (username, password, email, date of birth)
-app.put('/users/:id', (req, res) => {
-    const { id } = req.params;
-    const updatedUser = req.body;
+    // Update a user's info, by username
+    /* We’ll expect JSON in this format
+    {
+    Username: String,
+    (required)
+    Password: String,
+    (required)
+    Email: String,
+    (required)
+    Birthday: Date
+    }*/
+    app.put('/users/:Username', (req, res) => {
+        Users.findOneAndUpdate({ Username: req.params.Username }, { $set:
+        {
+            Username: req.body.Username,
+            Password: req.body.Password,
+            Email: req.body.Email,
+            Birthday: req.body.Birthday
+        }
+        },
+        { new: true }, // This line makes sure that the updated document is returned
+        (err, updatedUser) => {
+        if(err) {
+            console.error(err);
+            res.status(500).send('Error: ' + err);
+        } else {
+            res.json(updatedUser);
+        }
+        });
+    });
 
-    let user = users.find( user => user.id == id );
 
-    if (user) {
-        user.name = updatedUser.name;
-        res.status(200).json(user);
-    } else {
-        res.status(400).send('no such user')
-    }
-})
 
 //  POST - Allow users to add a movie to their list of favorites
 app.post('/users/:id/:movieTitle', (req, res) => {
