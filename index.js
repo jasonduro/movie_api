@@ -85,12 +85,9 @@ app.post('/users', (req, res) => {
     // Update a user's info, by username
     /* We’ll expect JSON in this format
     {
-    Username: String,
-    (required)
-    Password: String,
-    (required)
-    Email: String,
-    (required)
+    Username: String, (required)
+    Password: String, (required)
+    Email: String, (required)
     Birthday: Date
     }*/
     app.put('/users/:Username', (req, res) => {
@@ -174,29 +171,29 @@ app.post('/users', (req, res) => {
         });
     });
 
-//READ Function - Return data (description, genre, director, image URL, whether it’s featured or not) about a single movie by title - using object destructuring
-app.get('/movies/:Title', (req, res) => {
-    Movies.findOne({ Title: req.params.Title })
+    //READ Function - Return data (description, genre, director, image URL, whether it’s featured or not) about a single movie by title - using object destructuring
+    app.get('/movies/:Title', (req, res) => {
+        Movies.findOne({ Title: req.params.Title })
+        .then((movie) => {
+            res.json(movie);
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send('Error: ' + err);
+        });
+    });
+
+//READ Function - Return the genre property of the movie object with dot syntax
+app.get('/movies/genre/:genreName', (req, res) => {
+    Movies.findOne({ 'Genre.Name': req.params.genreName })
     .then((movie) => {
-        res.json(movie);
+        res.status(201).json(movie.Genre);
     })
     .catch((err) => {
         console.error(err);
         res.status(500).send('Error: ' + err);
     });
 });
-
-//READ Function - Return the genre property of the movie object with dot syntax
-app.get('/movies/genre/:genreName', (req, res) => {
-    const { genreName } = req.params;
-    const genre = movies.find( movie => movie.Genre.Name === genreName ).Genre;
-
-    if (genre) {
-        res.status(200).json(genre);
-    } else {
-        res.status(400).send('no such genre')
-    }
-})
 
 //READ Function - Return Data about a Director by Name
 app.get('/movies/director/:directorName', (req, res) => {
