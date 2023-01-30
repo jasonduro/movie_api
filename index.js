@@ -10,12 +10,17 @@ const Models = require('./models.js');
 const Movies = Models.Movie;
 const Users = Models.User;
 
-mongoose.connect('mongodb:localhost:27017//cfDB', { useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect('mongodb://localhost:27017/cfDB', { useNewUrlParser: true, useUnifiedTopology: true});
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true}));
 app.use(morgan('common'));
 app.use(express.static('public'));
+
+//READ - Welcome Page
+app.get('/', (req, res) => {
+    res.send('Welcome to MyFlix Movie App!');
+  });
 
 
 //CREATE Function - Allow new users to register - Add a new user
@@ -157,28 +162,29 @@ app.post('/users', (req, res) => {
     });
 
 
-
-//READ - Welcome Page
-app.get('/', (req, res) => {
-    res.send('Welcome to MyFlix Movie App!');
-  });
-
-//READ Function - Return a list of ALL movies to the user
-app.get('/movies', (req, res) => {
-    res.status(200).json(movies);
-})
+    //READ Function - Return a list of ALL movies to the user
+    app.get('/movies', (req, res) => {
+        Movies.find()
+            .then((movies) => {
+            res.status(201).json(movies);
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send('Error: ' + err);
+        });
+    });
 
 //READ Function - Return data (description, genre, director, image URL, whether it’s featured or not) about a single movie by title - using object destructuring
-app.get('/movies/:title', (req, res) => {
-    const { title } = req.params;
-    const movie = movies.find( movie => movie.Title === title );
-
-    if (movie) {
-        res.status(200).json(movie);
-    } else {
-        res.status(400).send('no such movie')
-    }
-})
+app.get('/movies/:Title', (req, res) => {
+    Movies.findOne({ Title: req.params.Title })
+    .then((movie) => {
+        res.json(movie);
+    })
+    .catch((err) => {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+    });
+});
 
 //READ Function - Return the genre property of the movie object with dot syntax
 app.get('/movies/genre/:genreName', (req, res) => {
