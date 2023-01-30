@@ -17,21 +17,60 @@ app.use(bodyParser.urlencoded({ extended: true}));
 app.use(morgan('common'));
 app.use(express.static('public'));
 
-//READ - Welcome Page
-app.get('/', (req, res) => {
-    res.send('Welcome to MyFlix Movie App!');
-  });
+    //READ - Welcome Page
+    app.get('/', (req, res) => {
+        res.send('Welcome to MyFlix Movie App!');
+    });
 
+    //READ Function #1 - Return a list of ALL movies to the user
+    app.get('/movies', (req, res) => {
+        Movies.find()
+            .then((movies) => {
+            res.status(201).json(movies);
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send('Error: ' + err);
+        });
+    });
 
-//CREATE Function - Allow new users to register - Add a new user
-/* We’ll expect JSON in this format
-{
-  ID: Integer,
-  Username: String,
-  Password: String,
-  Email: String,
-  Birthday: Date
-}*/
+    //READ Function #2 - Return data (description, genre, director, image URL, whether it’s featured or not) about a single movie by title
+    app.get('/movies/:Title', (req, res) => {
+        Movies.findOne({ Title: req.params.Title })
+        .then((movie) => {
+            res.json(movie);
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send('Error: ' + err);
+        });
+    });
+
+    //READ Function #3 - Return data about the genre (description) by name/title(e.g., "Thriller")
+    app.get('/movies/genre/:genreName', (req, res) => {
+        Movies.findOne({ Genre: req.params.genreName })
+        .then((movie) => {
+            res.status(201).json(movie.Genre);
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send('Error: ' + err);
+        });
+    });
+
+    //READ Function #4 - Return Data about a Director (bio, birth year, death year) by name
+    app.get('/movies/director/:directorName', (req, res) => {
+        const { directorName } = req.params;
+        const director = movies.find( movie => movie.Director.Name === directorName ).Director;
+
+        if (director) {
+            res.status(200).json(director);
+        } else {
+            res.status(400).send('no such director')
+        }
+    })
+
+//CREATE Function #5 - Allow new users to register - Add a new user
 app.post('/users', (req, res) => {
     Users.findOne({ Username: req.body.Username })
       .then((user) => {
@@ -82,14 +121,7 @@ app.post('/users', (req, res) => {
         });
     });
 
-    // Update a user's info, by username
-    /* We’ll expect JSON in this format
-    {
-    Username: String, (required)
-    Password: String, (required)
-    Email: String, (required)
-    Birthday: Date
-    }*/
+    // UPDATE function #6 - Allow Users to update their info (username, password, email, birthday)
     app.put('/users/:Username', (req, res) => {
         Users.findOneAndUpdate({ Username: req.params.Username }, { $set:
         {
@@ -110,7 +142,7 @@ app.post('/users', (req, res) => {
         });
     });
 
-    // Add a movie to a user's list of favorites
+    // UPDATE Function #7 - Allow users to Add a movie to a user's list of favorites
     app.post('/users/:Username/movies/:MovieID', (req, res) => {
         Users.findOneAndUpdate({ Username: req.params.Username }, {
         $push: { FavoriteMovies: req.params.MovieID }
@@ -126,7 +158,7 @@ app.post('/users', (req, res) => {
         });
     });
 
-    // DELETE a movie from a user's list of favorites
+    // DELETE Function #8 - Allow users to Delete a movie from a user's list of favorites
     app.delete('/users/:Username/movies/:MovieID', (req, res) => {
         Users.findOneAndUpdate({ Username: req.params.Username }, {
         $pull: { FavoriteMovies: req.params.MovieID }
@@ -142,7 +174,7 @@ app.post('/users', (req, res) => {
         });
     });
 
-    // Delete a user by username
+    // DELETE Function #9 - Allow existing users to deregister
     app.delete('/users/:Username', (req, res) => {
         Users.findOneAndRemove({ Username: req.params.Username })
         .then((user) => {
@@ -157,55 +189,6 @@ app.post('/users', (req, res) => {
             res.status(500).send('Error: ' + err);
         });
     });
-
-
-    //READ Function - Return a list of ALL movies to the user
-    app.get('/movies', (req, res) => {
-        Movies.find()
-            .then((movies) => {
-            res.status(201).json(movies);
-        })
-        .catch((err) => {
-            console.error(err);
-            res.status(500).send('Error: ' + err);
-        });
-    });
-
-    //READ Function - Return data (description, genre, director, image URL, whether it’s featured or not) about a single movie by title - using object destructuring
-    app.get('/movies/:Title', (req, res) => {
-        Movies.findOne({ Title: req.params.Title })
-        .then((movie) => {
-            res.json(movie);
-        })
-        .catch((err) => {
-            console.error(err);
-            res.status(500).send('Error: ' + err);
-        });
-    });
-
-//READ Function - Return the genre property of the movie object with dot syntax
-app.get('/movies/genre/:genreName', (req, res) => {
-    Movies.findOne({ 'Genre.Name': req.params.genreName })
-    .then((movie) => {
-        res.status(201).json(movie.Genre);
-    })
-    .catch((err) => {
-        console.error(err);
-        res.status(500).send('Error: ' + err);
-    });
-});
-
-//READ Function - Return Data about a Director by Name
-app.get('/movies/director/:directorName', (req, res) => {
-    const { directorName } = req.params;
-    const director = movies.find( movie => movie.Director.Name === directorName ).Director;
-
-    if (director) {
-        res.status(200).json(director);
-    } else {
-        res.status(400).send('no such director')
-    }
-})
 
 app.listen(8080, () => {
     console.log("listening on 8080");
