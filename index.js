@@ -47,10 +47,10 @@ app.use(express.static('public'));
     });
 
     //READ Function #3 - Return data about the genre (description) by name/title(e.g., "Thriller")
-    app.get('/movies/genre/:genreName', (req, res) => {
-        Movies.findOne({ Genre: req.params.genreName })
-        .then((movie) => {
-            res.status(201).json(movie.Genre);
+    app.get('/genre/:Name', (req, res) => {
+        Genres.findOne({ Name: req.params.Name })
+        .then((genre) => {
+            res.json(genre.Description);
         })
         .catch((err) => {
             console.error(err);
@@ -59,16 +59,16 @@ app.use(express.static('public'));
     });
 
     //READ Function #4 - Return Data about a Director (bio, birth year, death year) by name
-    app.get('/movies/director/:directorName', (req, res) => {
-        const { directorName } = req.params;
-        const director = movies.find( movie => movie.Director.Name === directorName ).Director;
-
-        if (director) {
-            res.status(200).json(director);
-        } else {
-            res.status(400).send('no such director')
-        }
-    })
+    app.get('/director/:Name', (req, res) => {
+        Directors.findOne({ Name: req.params.Name })
+        .then((director) => {
+            res.json(director);
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send('Error: ' + err);
+        });
+    });
 
 //CREATE Function #5 - Allow new users to register - Add a new user
 app.post('/users', (req, res) => {
