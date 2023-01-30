@@ -302,35 +302,39 @@ app.post('/users', (req, res) => {
         });
     });
 
+    // DELETE a movie from a user's list of favorites
+    app.delete('/users/:Username/movies/:MovieID', (req, res) => {
+        Users.findOneAndUpdate({ Username: req.params.Username }, {
+        $pull: { FavoriteMovies: req.params.MovieID }
+        },
+        { new: true }, // This line makes sure that the updated document is returned
+        (err, updatedUser) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send('Error: ' + err);
+        } else {
+            res.json(updatedUser);
+        }
+        });
+    });
+
+    // Delete a user by username
+    app.delete('/users/:Username', (req, res) => {
+        Users.findOneAndRemove({ Username: req.params.Username })
+        .then((user) => {
+            if (!user) {
+            res.status(400).send(req.params.Username + ' was not found');
+            } else {
+            res.status(200).send(req.params.Username + ' was deleted.');
+            }
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send('Error: ' + err);
+        });
+    });
 
 
-//  DELETE - Allow users to remove a movie from their list of favorites
-app.delete('/users/:id/:movieTitle', (req, res) => {
-    const { id, movieTitle } = req.params;
-
-    let user = users.find( user => user.id == id );
-
-    if (user) {
-        user.favoriteMovies = user.favoriteMovies.filter( title => title !== movieTitle);
-        res.status(200).send(`${movieTitle} has been removed from user ${id}'s array`);
-    } else {
-        res.status(400).send('no such user')
-    }
-})
-
-//  DELETE - Allow existing users to deregister
-app.delete('/users/:id', (req, res) => {
-    const { id } = req.params;
-
-    let user = users.find( user => user.id == id );
-
-    if (user) {
-        users = users.filter( user => user.id != id);
-        res.status(200).send(`user ${id} has been deleted`);
-    } else {
-        res.status(400).send('no such user')
-    }
-})
 
 //READ - Welcome Page
 app.get('/', (req, res) => {
