@@ -47,9 +47,8 @@ app.use(express.static('public'));
     });
 
     //READ Function #3 - Return data about the genre (description) by name/title(e.g., "Thriller")
-    app.get('movies/genre/:Name', (req, res) => {
-        Movies.find({ 'Genre.Name' : req.params.Name})
-        .then((genre) => {
+    app.get('movies/genre/:name', (req, res) => {
+        Movies.findOne({ 'Genre.Name' : req.params.name }).then((genre) => {
             res.status(201).json(genre)
         })
         .catch((err) => {
@@ -59,9 +58,8 @@ app.use(express.static('public'));
     });
 
     //READ Function #4 - Return Data about a Director (bio, birth year, death year) by name
-    app.get('movies/director/:Name', (req, res) => {
-        Movies.findOne({ 'Director.Name' : req.params.Name})
-        .then((director) => {
+    app.get('movies/director/:name', (req, res) => {
+        Movies.findOne({ 'Director.Name' : req.params.name }).then((director) => {
             res.status(201).json(director)
         })
         .catch((err) => {
