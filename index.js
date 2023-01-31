@@ -47,10 +47,10 @@ app.use(express.static('public'));
     });
 
     //READ Function #3 - Return data about the genre (description) by name/title(e.g., "Thriller")
-    app.get('movies/genre/:genreName', (req, res) => {
-        Movies.findOne({ 'Genre.Name': req.params.genreName})
-        .then((movies) => {
-            res.json(movies.Genre);
+    app.get('movies/genre/:Name', (req, res) => {
+        Movies.findOne({ 'Genre.Name': req.params.Name})
+        .then((genre) => {
+            res.status(201).json(genre);
         })
         .catch((err) => {
             console.error(err);
