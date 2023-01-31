@@ -22,7 +22,6 @@ let userSchema = mongoose.Schema({
     Email: {type: String, required: true},
     Birthday: Date,
     FavoriteMovies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Movie'}]
-    //"To Watch:" movie list is an optional feature
 });
 
 let Movie = mongoose.model('Movie', movieSchema);

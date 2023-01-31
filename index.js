@@ -38,7 +38,7 @@ app.use(express.static('public'));
     app.get('/movies/:Title', (req, res) => {
         Movies.findOne({ Title: req.params.Title })
         .then((movie) => {
-            res.json(movie);
+            res.status(201).json(movie);
         })
         .catch((err) => {
             console.error(err);
@@ -48,9 +48,9 @@ app.use(express.static('public'));
 
     //READ Function #3 - Return data about the genre (description) by name/title(e.g., "Thriller")
     app.get('movies/genre/:Name', (req, res) => {
-        Movies.findOne({ 'Genre.Name': req.params.Name})
+        Movies.find({ 'Genre.Name' : req.params.Name})
         .then((genre) => {
-            res.status(201).json(genre);
+            res.status(201).json(genre)
         })
         .catch((err) => {
             console.error(err);
@@ -60,9 +60,9 @@ app.use(express.static('public'));
 
     //READ Function #4 - Return Data about a Director (bio, birth year, death year) by name
     app.get('movies/director/:Name', (req, res) => {
-        Movies.findOne({ "Director.Name": req.params.Name})
-        .then((movies) => {
-            res.json(movies.Director);
+        Movies.findOne({ 'Director.Name' : req.params.Name})
+        .then((director) => {
+            res.status(201).json(director)
         })
         .catch((err) => {
             console.error(err);
