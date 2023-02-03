@@ -17,6 +17,11 @@ app.use(bodyParser.urlencoded({ extended: true}));
 app.use(morgan('common'));
 app.use(express.static('public'));
 
+let auth = require('./auth')(app);
+
+const passport = require('passport');
+require('./passport');
+
     //READ - Welcome Page
     app.get('/', (req, res) => {
         res.send('Welcome to MyFlix Movie App!');
