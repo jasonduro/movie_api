@@ -18,7 +18,20 @@ app.use(morgan('common'));
 app.use(express.static('public'));
 
 const cors = require('cors');
-app.use(cors());
+let allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if(!origin) return callback(null, true);
+    if(allowedOrigins.indexOf(origin) === -1){ // If a specific origin isn’t found on the list of allowed origins
+      let message = 'The CORS policy for this application doesn’t allow access from origin ' + origin;
+      return callback(new Error(message ), false);
+    }
+    return callback(null, true);
+  }
+}));
+
+
 
 let auth = require('./auth')(app);
 
@@ -77,43 +90,33 @@ require('./passport');
     });
 
     //CREATE Function #5 - Allow new users to register - Add a new user
-    app.post('/users', passport.authenticate('jwt', { session: false }), (req, res) => {
-        Users.findOne({ Username: req.body.Username })
-        .then((user) => {
+    app.post('/users', (req, res) => {
+        let hashedPassword = Users.hashPassword(req.body.Password);
+        Users.findOne({ Username: req.body.Username }) // Search to see if a user with the requested username already exists
+          .then((user) => {
             if (user) {
-            return res.status(400).send(req.body.Username + 'already exists');
+            //If the user is found, send a response that it already exists
+              return res.status(400).send(req.body.Username + ' already exists');
             } else {
-            Users
+              Users
                 .create({
-                Username: req.body.Username,
-                Password: req.body.Password,
-                Email: req.body.Email,
-                Birthday: req.body.Birthday
+                  Username: req.body.Username,
+                  Password: hashedPassword,
+                  Email: req.body.Email,
+                  Birthday: req.body.Birthday
                 })
-                .then((user) =>{res.status(201).json(user) })
-            .catch((error) => {
-                console.error(error);
-                res.status(500).send('Error: ' + error);
-            })
+                .then((user) => { res.status(201).json(user) })
+                .catch((error) => {
+                  console.error(error);
+                  res.status(500).send('Error: ' + error);
+                });
             }
-        })
-        .catch((error) => {
+          })
+          .catch((error) => {
             console.error(error);
             res.status(500).send('Error: ' + error);
-        });
-    });
-
-    // Get all users READ data through GET Request for all users
-        app.get('/users', (req, res) => {
-            Users.find()
-            .then((users) => {
-                res.status(201).json(users);
-            })
-            .catch((err) => {
-                console.error(err);
-                res.status(500).send('Error: ' + err);
-            });
-        });
+          });
+      });
 
     // Get a user by username - GET Request for specific user based on username
     app.get('/users/:Username', passport.authenticate('jwt', { session: false }), (req, res) => {
