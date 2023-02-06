@@ -34,8 +34,6 @@ app.use(cors({
   }
 }));
 
-
-
 let auth = require('./auth')(app);
 
 const passport = require('passport');
@@ -72,7 +70,7 @@ require('./passport');
 
     //READ Function #3 - Return data about the genre (description) by name/title(e.g., "Thriller")
     app.get('movies/genre/:name', passport.authenticate('jwt', { session: false }), (req, res) => {
-        Movies.findOne({ 'Genre.Name' : req.params.name }).then((genre) => {
+        Movies.find({ 'Genre.Name' : req.params.name }).then((genre) => {
             res.status(201).json(genre)
         })
         .catch((err) => {
@@ -83,7 +81,7 @@ require('./passport');
 
     //READ Function #4 - Return Data about a Director (bio, birth year, death year) by name
     app.get('movies/director/:name', passport.authenticate('jwt', { session: false }), (req, res) => {
-        Movies.findOne({ 'Director.Name' : req.params.name }).then((director) => {
+        Movies.find({ 'Director.Name' : req.params.name }).then((director) => {
             res.status(201).json(director)
         })
         .catch((err) => {
