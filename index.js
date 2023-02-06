@@ -91,7 +91,37 @@ require('./passport');
     });
 
     //CREATE Function #5 - Allow new users to register - Add a new user (with server-side validation)
-    app.post('/users',
+    //added back older code - need to update after adding a user
+    app.post('/users', (req, res) => {
+        Users.findOne({ Username: req.body.Username })
+          .then((user) => {
+            if (user) {
+              return res.status(400).send(req.body.Username + 'already exists');
+            } else {
+              Users
+                .create({
+                  Username: req.body.Username,
+                  Password: req.body.Password,
+                  Email: req.body.Email,
+                  Birthday: req.body.Birthday
+                })
+                .then((user) =>{res.status(201).json(user) })
+              .catch((error) => {
+                console.error(error);
+                res.status(500).send('Error: ' + error);
+              })
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+            res.status(500).send('Error: ' + error);
+          }); 
+      }); 
+
+
+
+//commented out newer code 
+    /*     app.post('/users',
     // Validation logic here for request
     //you can either use a chain of methods like .not().isEmpty()
     //which means "opposite of isEmpty" in plain english "is not empty"
@@ -136,7 +166,7 @@ require('./passport');
           console.error(error);
           res.status(500).send('Error: ' + error);
         });
-    });
+    }); */
 
     // Get a user by username - GET Request for specific user based on username
     app.get('/users/:Username', passport.authenticate('jwt', { session: false }), (req, res) => {

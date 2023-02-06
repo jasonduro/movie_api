@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
 mongoose.connect("mongodb://localhost:27017/cfDB", { useNewUrlParser: true });
 
-const bcrypt = require('bcrypt');
+//commented out bcrypt to set up a new uses first
+//const bcrypt = require('bcrypt');
 
 let movieSchema = mongoose.Schema({
     Title: {type: String, required: true},
@@ -28,13 +29,14 @@ let userSchema = mongoose.Schema({
     FavoriteMovies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Movie'}]
 });
 
-userSchema.statics.hashPassword = (password) => {
+//commented out hashpasswords for now in order to allow adding of new users according to exercise 2.9
+/* userSchema.statics.hashPassword = (password) => {
     return bcrypt.hashSync(password, 10);
   };
   
   userSchema.methods.validatePassword = function(password) {
     return bcrypt.compareSync(password, this.Password);
-  };
+  }; */
 
 let Movie = mongoose.model('Movie', movieSchema);
 let User = mongoose.model('User', userSchema);
